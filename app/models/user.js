@@ -1,7 +1,11 @@
-var db = require('../config');
+var mongodb = require('../config');
+var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var Promise = require('bluebird');
 
+var User = mongoose.model('users', mongodb.userSchema);
+
+/*
 var User = db.Model.extend({
   tableName: 'users',
   hasTimestamps: true,
@@ -21,5 +25,6 @@ var User = db.Model.extend({
       });
   }
 });
+*/
 
 module.exports = User;
