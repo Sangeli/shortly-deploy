@@ -13,6 +13,15 @@ module.exports = function(grunt) {
       },
     },
 
+    htmlrefs: {
+      dist: {
+        /** @required  - string including grunt glob variables */
+        src: './views/**/*.ejs',
+        /** @optional  - string directory name*/
+        dest: './dist/views.ejs',
+      }
+    },
+
     mochaTest: {
       test: {
         options: {
@@ -29,15 +38,25 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      target: {
+        files: {
+          './dist/built.min.js': ['./dist/built.js']
+        }
+      }
     },
 
     eslint: {
       target: [
-        // Add list of files to lint here
+        './dist/**.js'
       ]
     },
 
     cssmin: {
+      target: {
+        files: {
+          './dist/style.min.css': ['./public/style.css']
+        }
+      }
     },
 
     watch: {
@@ -71,6 +90,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-nodemon');
+  grunt.loadNpmTasks('grunt-htmlrefs');
 
   grunt.registerTask('server-dev', function (target) {
     grunt.task.run([ 'nodemon', 'watch' ]);
