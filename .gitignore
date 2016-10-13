@@ -19,3 +19,7 @@ Icon
 .floobit
 .floo
 .flooignore
+
+
+# Builds
+dist

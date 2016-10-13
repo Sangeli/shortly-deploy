@@ -3,6 +3,14 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      options: {
+        separator: ';\n',
+      },
+      basic_and_extras: {
+        files: {
+          'dist/built.js': ['public/client/**.js'],
+        }
+      },
     },
 
     mochaTest: {
@@ -10,7 +18,7 @@ module.exports = function(grunt) {
         options: {
           reporter: 'spec'
         },
-        src: ['test/**/*.js']
+        src: ['test/**.js']
       }
     },
 
@@ -90,6 +98,8 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [
     // add your deploy tasks here
   ]);
+
+  //add a defualt task
 
 
 };
