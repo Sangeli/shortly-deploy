@@ -1,15 +1,16 @@
 var path = require('path');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost:27017/test');
+console.log('start mongooose server');
 var Schema = mongoose.Schema;
 
 
-var linkSchema;
-var userSchema;
+var Link;
+var User;
 
 
 var createSchema = function() {
-  linkSchema = new Schema({
+  var linkSchema = new Schema({
     url: String,
     baseUrl: String,
     code: String,
@@ -21,7 +22,10 @@ var createSchema = function() {
     shasum.update(this.get('url'));
     this.set('code', shasum.digest('hex').slice(0, 5));
   };
-  userSchema = new Schema ({
+  Link = mongoose.model('urls', linkSchema);
+  exports.Link = Link;
+
+  var userSchema = new Schema ({
     username: { type: String, unique: true, required: true },
     password: String
   });
@@ -38,25 +42,27 @@ var createSchema = function() {
       callback(isMatch);
     });
   };
-  var User = mongoose.model('users', userSchema);
+  User = mongoose.model('users', userSchema);
+  exports.User = User;
+  console.log('create schema done');
 };
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  console.log('opening');
+  console.log('opened mongoose');
   createSchema();
+  db.Link = Link;
+  db.User = User;
 });
-
-exports.linkSchema = linkSchema;
-exports.userSchema = userSchema;
+exports.db = db;
 
 
 /*
 var knex = require('knex')({
   client: 'sqlite3',
   connection: {
-    filename: path.join(__dirname, '../db/shortly.sqlite')
+    filename: path.join(__dirname, '../db/shortly.sqlite')z
   },
   useNullAsDefault: true
 });
@@ -92,4 +98,3 @@ db.knex.schema.hasTable('urls').then(function(exists) {
 
 */
 
-module.exports = db;
