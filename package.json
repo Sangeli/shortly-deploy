@@ -41,14 +41,6 @@
     "sqlite3": "~3.1.1"
   },
   "devDependencies": {
-    "bcrypt-nodejs": "0.0.3",
-    "bluebird": "^3.4.6",
-    "body-parser": "^1.15.2",
-    "bookshelf": "^0.9.5",
-    "chai": "^3.5.0",
-    "cookie-parser": "^1.4.3",
-    "ejs": "^2.5.2",
-    "sqlite3": "^3.1.6",
     "supertest": "^1.2.0"
   }
 }
