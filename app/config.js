@@ -1,13 +1,16 @@
 var path = require('path');
+var Promise = require('bluebird');
+var bcrypt = require('bcrypt-nodejs');
+var crypto = require('crypto');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/test');
-console.log('start mongooose server');
 var Schema = mongoose.Schema;
+mongoose.connect('mongodb://localhost:27017/test');
 
 
 var Link;
 var User;
 
+var db = mongoose.connection;
 
 var createSchema = function() {
   var linkSchema = new Schema({
@@ -17,11 +20,13 @@ var createSchema = function() {
     title: String,
     visits: {type: Number, default: 0 }
   });
+
   linkSchema.methods.hashUrl = function () {
     var shasum = crypto.createHash('sha1');
     shasum.update(this.get('url'));
     this.set('code', shasum.digest('hex').slice(0, 5));
   };
+  
   Link = mongoose.model('urls', linkSchema);
   exports.Link = Link;
 
@@ -37,17 +42,22 @@ var createSchema = function() {
         this.set('password', hash);
       });
   };
-  userSchema.methods.comparePassword = (attemptedPassword, callback) => {
-    bcrypt.compare(attemptedPassword, this.get('password'), function(err, isMatch) {
+
+  userSchema.methods.comparePassword = (attemptedPassword, userPass, callback) => {
+    console.log('attempted password', attemptedPassword);
+    console.log('input', userPass);
+    bcrypt.compare(attemptedPassword, userPass, function(err, isMatch) {
+      console.log(err);
+      console.log('is match', isMatch);
       callback(isMatch);
     });
   };
+
   User = mongoose.model('users', userSchema);
   exports.User = User;
   console.log('create schema done');
 };
 
-var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log('opened mongoose');
@@ -55,6 +65,7 @@ db.once('open', function() {
   db.Link = Link;
   db.User = User;
 });
+
 exports.db = db;
 
 

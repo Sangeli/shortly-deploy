@@ -3,9 +3,11 @@ var express = require('express');
 var expect = require('chai').expect;
 var app = require('../server-config.js');
 
-var db = require('../app/config');
-var User = require('../app/models/user');
-var Link = require('../app/models/link');
+var config = require('../app/config');
+
+var db = config.db;
+var Link = config.Link;
+var User = config.User;
 
 /////////////////////////////////////////////////////
 // NOTE: these tests are designed for mongo!
@@ -18,7 +20,8 @@ describe('', function() {
     request(app)
       .get('/logout')
       .end(function(err, res) {
-
+        Link = config.Link;
+        User = config.User;
         // Delete objects from db so they can be created later for the test
         Link.remove({url: 'http://www.roflzoo.com/'}).exec();
         User.remove({username: 'Savannah'}).exec();
@@ -97,7 +100,7 @@ describe('', function() {
           baseUrl: 'http://127.0.0.1:4568',
           visits: 0
         });
-
+        link.hashUrl();
         link.save(function() {
           done();
         });
@@ -105,6 +108,7 @@ describe('', function() {
 
       it('Returns the same shortened code if attempted to add the same URL twice', function(done) {
         var firstCode = link.code;
+        console.log('FIRSTCODE', firstCode);
         request(app)
           .post('/links')
           .send({
@@ -119,11 +123,14 @@ describe('', function() {
 
       it('Shortcode redirects to correct url', function(done) {
         var sha = link.code;
+        console.log('code', sha);
+
         request(app)
           .get('/' + sha)
           .expect(302)
           .expect(function(res) {
             var redirect = res.headers.location;
+            console.log(redirect, 'REDIRECT IS HERE');
             expect(redirect).to.equal('http://www.roflzoo.com/');
           })
           .end(done);
@@ -208,10 +215,12 @@ describe('', function() {
   describe('Account Login:', function() {
 
     beforeEach(function(done) {
-      new User({
+      var newUser = new User({
         'username': 'Phillip',
         'password': 'Phillip'
-      }).save(function() {
+      });
+      newUser.hashPassword();
+      newUser.save(function() {
         done();
       });
     });
